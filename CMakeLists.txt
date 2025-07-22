@@ -296,6 +296,7 @@ if(NOT HAVE_SYS_TIME_H)
   endif(MSVC)
 endif(NOT HAVE_SYS_TIME_H)
 
+if(NOT QNX)
 # OSX has sys/time.h, but it still lacks itimerspec
 if(HAVE_SYS_TIME_H)
   check_struct_member("struct itimerspec" it_value "sys/time.h" HAVE_STRUCT_ITIMERSPEC_IT_VALUE)
@@ -304,6 +305,7 @@ if(HAVE_SYS_TIME_H)
     set(STRUCT_ITIMERSPEC_DEFINITION_MISSING 1)
   endif(NOT HAVE_STRUCT_ITIMERSPEC_IT_VALUE)
 endif(HAVE_SYS_TIME_H)
+endif(NOT QNX)
 
 ###############################################################################
 # Check for integer types
@@ -501,7 +503,7 @@ if(BUILD_TESTING AND NOT THIS_IS_SUBPROJECT)
   add_test(NAME check_check_export COMMAND check_check_export)
 
   # Only offer to run shell scripts if we may have a working interpreter
-  if(UNIX OR MINGW OR MSYS)
+  if(UNIX OR MINGW OR MSYS OR QNX)
     add_test(NAME test_output.sh
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tests
       COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_output.sh)
@@ -523,7 +525,7 @@ if(BUILD_TESTING AND NOT THIS_IS_SUBPROJECT)
     add_test(NAME test_set_max_msg_size.sh
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tests
       COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_set_max_msg_size.sh)
-  endif(UNIX OR MINGW OR MSYS)
+  endif(UNIX OR MINGW OR MSYS OR QNX)
 endif()
 
 ###############################################################################
