@@ -296,16 +296,19 @@ if(NOT HAVE_SYS_TIME_H)
   endif(MSVC)
 endif(NOT HAVE_SYS_TIME_H)
 
-if(NOT QNX)
 # OSX has sys/time.h, but it still lacks itimerspec
 if(HAVE_SYS_TIME_H)
+if(QNX)
+  check_struct_member("struct itimerspec" it_value "time.h" HAVE_STRUCT_ITIMERSPEC_IT_VALUE)
+else()
   check_struct_member("struct itimerspec" it_value "sys/time.h" HAVE_STRUCT_ITIMERSPEC_IT_VALUE)
+endif()
   if(NOT HAVE_STRUCT_ITIMERSPEC_IT_VALUE)
     add_definitions(-DSTRUCT_ITIMERSPEC_DEFINITION_MISSING=1)
     set(STRUCT_ITIMERSPEC_DEFINITION_MISSING 1)
   endif(NOT HAVE_STRUCT_ITIMERSPEC_IT_VALUE)
 endif(HAVE_SYS_TIME_H)
-endif(NOT QNX)
+
 
 ###############################################################################
 # Check for integer types
