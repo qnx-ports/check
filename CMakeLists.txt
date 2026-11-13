@@ -171,6 +171,7 @@ ck_check_include_file("windows.h" HAVE_WINDOWS_H)
 
 ###############################################################################
 # Check functions
+check_function_exists(clock_gettime HAVE_CLOCK_GETTIME)
 check_function_exists(fork HAVE_FORK)
 check_function_exists(getline HAVE_GETLINE)
 check_function_exists(getpid HAVE_GETPID)
@@ -397,6 +398,19 @@ if (HAVE_LIBRT)
   set(LIBRT "rt")
   ADD_DEFINITIONS(-DHAVE_LIBRT=1)
 endif (HAVE_LIBRT)
+
+# Some systems, such as QNX, have the POSIX timers in libc and no librt. Use
+# those instead of the replacements in lib/, which would otherwise replace
+# them in every program linked with Check.
+if (NOT HAVE_LIBRT)
+  check_function_exists(timer_create HAVE_TIMER_CREATE)
+  check_function_exists(timer_settime HAVE_TIMER_SETTIME)
+  check_function_exists(timer_delete HAVE_TIMER_DELETE)
+  if (HAVE_TIMER_CREATE AND HAVE_TIMER_SETTIME AND HAVE_TIMER_DELETE)
+    set(HAVE_LIBC_TIMERS 1)
+    ADD_DEFINITIONS(-DHAVE_LIBRT=1)
+  endif ()
+endif (NOT HAVE_LIBRT)
 
 check_library_exists(subunit subunit_test_start "" HAVE_SUBUNIT)
 if (HAVE_SUBUNIT)
